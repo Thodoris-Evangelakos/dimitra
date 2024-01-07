@@ -12,3 +12,6 @@ class Seismos():
     
     def __repr__(self):
         return(f"Year: {self.year}, Dates: {self.dates}, Lat: {self.lat}, Lon: {self.lon}, Dep: {self.dep}, M: {self.M}")
+    
+    def prnt(self):
+        return [self.lat, self.lon, str(self.M), self.dates, self.year]

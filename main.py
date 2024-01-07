@@ -1,6 +1,5 @@
-import csv
-import sys
-import ast
+import csv, sys, ast, os
+import calendar
 from Perifereia import Perifereia
 from Seismos import Seismos
 import shapely.geometry as sg
@@ -10,7 +9,10 @@ perifereies_file = "perifereies.csv"
 seismoi_path = "seismoi.dat"
 peloponnhsos_fid = "d7f50467-e5ef-49ac-a7ce-15df3e2ed738.9"
 perifereies_path = "data/regions"
-csv.field_size_limit(sys.maxsize)
+regions = ['Π. ΑΝΑΤΟΛΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ - ΘΡΑΚΗΣ', 'Π. ΚΕΝΤΡΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ', 'Π. ΔΥΤΙΚΗΣ ΜΑΚΕΔΟΝΙΑΣ', 'Π. ΗΠΕΙΡΟΥ', 'Π. ΘΕΣΣΑΛΙΑΣ', 'Π. ΒΟΡΕΙΟΥ ΑΙΓΑΙΟΥ', 'Π. ΝΟΤΙΟΥ ΑΙΓΑΙΟΥ', 'Π. ΣΤΕΡΕΑΣ ΕΛΛΑΔΑΣ', 'Π. ΔΥΤΙΚΗΣ ΕΛΛΑΔΑΣ', 'Π. ΠΕΛΟΠΟΝΝΗΣΟΥ', 'Π. ΙΟΝΙΩΝ ΝΗΣΩΝ', 'Π. ΚΡΗΤΗΣ', 'Π. ΑΤΤΙΚΗΣ']
+csv.field_size_limit(2**31-1)
+
+get_month = lambda timestamp: calendar.month_name[int(timestamp[:2])]
 
 # read sumn
 
@@ -31,14 +33,15 @@ def findPolygons(polygons_data):
     return polygons
 
 def loadPerifereies() -> list:
-    perifereies = [] 
-    with open(perifereies_file, 'r') as f:
+    perifereies = []
+    with open(perifereies_file, 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header
         for row in reader:
             FID, per, polygons_data = row
             polygons = findPolygons(polygons_data)  # Pass the polygon data to findPolygons
             perifereies.append(Perifereia(FID, per, polygons))
+        #print([perifereia.per for perifereia in perifereies])
     return perifereies
 
 def serializePerifereies(perifereies):
@@ -79,11 +82,13 @@ def findSeismoiPoints():
     multipolygons = [readPolygonsFromFile(i) for i in range(1, 14)]
     
     seismoi = openSeismoiFile()
-    
-    for multipolygon in multipolygons:
+    print("Latitude, Longitude, Magnitude, Month, Year, Perifereia")
+    for index, multipolygon in enumerate(multipolygons):
         for seismos in seismoi:
             if sg.Point(seismos.lon, seismos.lat).intersects(multipolygon):
-                print(seismos)
+                _tmp = [str(item).rstrip() for item in seismos.prnt()]
+                if int(_tmp[4]) >= 1960 and int(_tmp[4]) <= 2010:
+                    print(f"{_tmp[0]}, {_tmp[1]}, {_tmp[2]}, {get_month(_tmp[3])}, {_tmp[4]}, {regions[index]}")
                 #print(multipolygon)
                 #print()
 
@@ -91,6 +96,7 @@ def findSeismoiPoints():
 def main():
     # ftiaxnoume ta csv files
     serializePerifereies(loadPerifereies())
+    
     findSeismoiPoints()
     
     
