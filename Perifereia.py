@@ -10,8 +10,15 @@ class Perifereia():
     def __str__(self):
         return(f"FID: {self.FID}, PER: {self.per}, Coord sample: {self.polygons[0][0:2]}...")
     
+    def __repr__(self):
+        return(f"FID: {self.FID}, PER: {self.per}, Coord sample: {self.polygons[0][0:2]}...")
+    
+    def verbose(self):
+        return(f"FID: {self.FID}, PER: {self.per}, Polygons: {self.polygons}")
+    
     def file(self, index):
-        filename = f"region{index+1}.csv"
-        with open(filename, 'w') as f:
+        path = "data/regions/"
+        filename = f"{path}region{index+1}.csv"
+        with open(filename, 'w+') as f:
             for polygon in self.polygons:
                 f.write(f"{polygon}\n")

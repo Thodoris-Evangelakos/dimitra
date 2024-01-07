@@ -9,3 +9,6 @@ class Seismos():
         
     def __str__(self):
         return(f"Year: {self.year}, Dates: {self.dates}, Lat: {self.lat}, Lon: {self.lon}, Dep: {self.dep}, M: {self.M}")
+    
+    def __repr__(self):
+        return(f"Year: {self.year}, Dates: {self.dates}, Lat: {self.lat}, Lon: {self.lon}, Dep: {self.dep}, M: {self.M}")

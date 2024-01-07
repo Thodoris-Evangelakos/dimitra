@@ -36,12 +36,17 @@ def loadPerifereies() -> list:
             perifereies.append(Perifereia(FID, per, polygons))
     return perifereies
 
+def serializePerifereies(perifereies):
+    for i, perifereia in enumerate(perifereies):
+        perifereia.file(i)
+    
+
 def openSeismoiFile():
     # too bulky, can be optimized but w.e
     with open(seismoi_path, 'r') as f:
         data = []
         for i, line in enumerate(f):
-            if i > 19 and i < 11425:
+            if i > 17 and i < 11425:
                 data.append(tuple(line.split(" ")))
         ref_data = []
         for lst in data:
@@ -58,7 +63,7 @@ def findSeismoiPoints():
     for seismos in seismoi:
         for perifereia in perifereies:
             for polygon in perifereia.polygons:
-                if sg.Point(seismos.lat, seismos.lon).within(sg.Polygon(polygon)):
+                if sg.Point(seismos.lat, seismos.lon).intersects(sg.Polygon(polygon)):
                     print(seismos)
                     print(perifereia)
                     print(polygon)
@@ -66,7 +71,7 @@ def findSeismoiPoints():
 
 
 def main():
-    findSeismoiPoints()
+    serializePerifereies(loadPerifereies())
 
 if __name__ == "__main__":
     main()
