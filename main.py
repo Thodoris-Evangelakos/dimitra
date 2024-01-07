@@ -46,9 +46,10 @@ def openSeismoiFile():
 
 
 def main():
-    #perifereies = loadPerifereies()
+    perifereies = loadPerifereies()
+    print(perifereies[0])
     data = openSeismoiFile()
-    print(data)
+    #print(data)
 
 if __name__ == "__main__":
     main()
