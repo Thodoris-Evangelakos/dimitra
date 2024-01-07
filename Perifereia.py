@@ -8,7 +8,7 @@ class Perifereia():
         self.polygons = polygons
 
     def __str__(self):
-        return(f"FID: {self.FID}, PER: {self.per}, Coord sample: {self.polygons[0][0:2]}")
+        return(f"FID: {self.FID}, PER: {self.per}, Coord sample: {self.polygons[0][0:2]}...")
     
     def file(self, index):
         filename = f"region{index+1}.csv"

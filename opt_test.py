@@ -3,6 +3,7 @@ import sys
 from Perifereia import Perifereia
 from Seismos import Seismos
 import shapely.geometry as sg
+from rtree import index
 
 perifereies_path = "perifereies.csv"
 seismoi_path = "seismoi.dat"
@@ -10,8 +11,6 @@ peloponnhsos_fid = "d7f50467-e5ef-49ac-a7ce-15df3e2ed738.9"
 csv.field_size_limit(sys.maxsize)
 
 def findPolygons(polygons_data):
-    if not polygons_data.strip():  # Check if the input string is empty or contains only whitespace
-        return []
     polygons = []
     # Remove double quotes
     polygons_data = polygons_data.replace('"', '')
@@ -55,18 +54,66 @@ def openSeismoiFile():
 def findSeismoiPoints():
     seismoi = openSeismoiFile()
     perifereies = loadPerifereies()
+
+    # Create an R-tree index
+    idx = index.Index()
+
+    # Populate the index with each polygon's bounding box
+    for i, perifereia in enumerate(perifereies):
+        for polygon in perifereia.polygons:
+            idx.insert(i, sg.Polygon(polygon).bounds)
+
+    # For each seismos, find which polygon it's in
     for seismos in seismoi:
-        for perifereia in perifereies:
-            for polygon in perifereia.polygons:
-                if sg.Point(seismos.lat, seismos.lon).within(sg.Polygon(polygon)):
+        point = sg.Point(seismos.lat, seismos.lon)
+        print(f"Checking point {point}")
+        intersections = list(idx.intersection((seismos.lat, seismos.lon)))
+        print(f"Intersections: {intersections}")
+        for j in intersections:
+            for polygon in perifereies[j].polygons:
+                poly = sg.Polygon(polygon)
+                print(f"Checking polygon {poly}")
+                if point.within(poly):
                     print(seismos)
-                    print(perifereia)
+                    print(perifereies[j])
+                    print(polygon)
+                    print()
+                    
+def test_findSeismoiPoints():
+    # Create some test data
+    seismoi = [Seismos(2000, "01-01", 1.0, 1.0, "10", "5.0")]
+    perifereies = [Perifereia("1", "Test", [[(0.0, 0.0), (0.0, 2.0), (2.0, 2.0), (2.0, 0.0)]]), 
+                   Perifereia("2", "Test2", [[(3.0, 3.0), (3.0, 5.0), (5.0, 5.0), (5.0, 3.0)]]),]
+
+    # Create an R-tree index
+    idx = index.Index()
+
+    # Populate the index with each polygon's bounding box
+    for i, perifereia in enumerate(perifereies):
+        for polygon in perifereia.polygons:
+            idx.insert(i, sg.Polygon(polygon).bounds)
+
+    # For each seismos, find which polygon it's in
+    for seismos in seismoi:
+        point = sg.Point(seismos.lat, seismos.lon)
+        print(f"Checking point {point}")
+        intersections = list(idx.intersection((seismos.lat, seismos.lon)))
+        print(f"Intersections: {intersections}")
+        for j in intersections:
+            for polygon in perifereies[j].polygons:
+                poly = sg.Polygon(polygon)
+                print(f"Checking polygon {poly}")
+                if point.within(poly):
+                    print(seismos)
+                    print(perifereies[j])
                     print(polygon)
                     print()
 
 
+
+
 def main():
-    findSeismoiPoints()
+    test_findSeismoiPoints()
 
 if __name__ == "__main__":
     main()
