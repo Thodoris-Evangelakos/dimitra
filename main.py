@@ -1,13 +1,18 @@
 import csv
 import sys
+import ast
 from Perifereia import Perifereia
 from Seismos import Seismos
 import shapely.geometry as sg
+from shapely.geometry import Polygon, MultiPolygon
 
-perifereies_path = "perifereies.csv"
+perifereies_file = "perifereies.csv"
 seismoi_path = "seismoi.dat"
 peloponnhsos_fid = "d7f50467-e5ef-49ac-a7ce-15df3e2ed738.9"
+perifereies_path = "data/regions"
 csv.field_size_limit(sys.maxsize)
+
+# read sum
 
 def findPolygons(polygons_data):
     if not polygons_data.strip():  # Check if the input string is empty or contains only whitespace
@@ -27,7 +32,7 @@ def findPolygons(polygons_data):
 
 def loadPerifereies() -> list:
     perifereies = [] 
-    with open(perifereies_path, 'r') as f:
+    with open(perifereies_file, 'r') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header
         for row in reader:
@@ -39,7 +44,21 @@ def loadPerifereies() -> list:
 def serializePerifereies(perifereies):
     for i, perifereia in enumerate(perifereies):
         perifereia.file(i)
-    
+
+def readPolygonsFromFile(index):
+    path = f"{perifereies_path}/region{index}.csv"
+    polygons = []
+    with open(path, 'r') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            for item in row:
+                # Convert string representation of tuples to actual tuples
+                polygon_coordinates = ast.literal_eval(item)
+                # Create a Polygon object and append it to the list
+                polygons.append(Polygon(polygon_coordinates))
+    # Create a MultiPolygon object from the list of Polygon objects
+    multipolygon = MultiPolygon(polygons)
+    return multipolygon
 
 def openSeismoiFile():
     # too bulky, can be optimized but w.e
@@ -62,16 +81,18 @@ def findSeismoiPoints():
     perifereies = loadPerifereies()
     for seismos in seismoi:
         for perifereia in perifereies:
-            for polygon in perifereia.polygons:
-                if sg.Point(seismos.lat, seismos.lon).intersects(sg.Polygon(polygon)):
-                    print(seismos)
-                    print(perifereia)
-                    print(polygon)
-                    print()
+            multipolygon = MultiPolygon(perifereia.polygons)
+            if sg.Point(seismos.lat, seismos.lon).intersects(multipolygon):
+                print(seismos)
+                print(perifereia)
+                print(multipolygon)
+                print()
 
 
 def main():
+    # ftiaxnoume ta csv files
     serializePerifereies(loadPerifereies())
+    
 
 if __name__ == "__main__":
     main()
