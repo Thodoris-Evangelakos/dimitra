@@ -130,8 +130,10 @@ def findSeismoiPoints():
             with open(f"{OUTPUT_PATH}output{counter}.csv", 'w') as f:
                 f.write(string)
                 counter += 1
-                    
+
 def visualizeData():
+    plt.style.use('ggplot')  # ggwp
+
     earthquake_counts = {}
     region_names = ['Thessaly', 'Attica']
 
@@ -145,24 +147,31 @@ def visualizeData():
                 if decade not in decades:
                     decades[decade] = 0
                 decades[decade] += 1
-            file_number = int(file.split('\\')[-1].split('output')[1].split('.csv')[0]) -1 #auto doulevei sta windows, den exw idea giati to file einai output\\output{index}.csv
-            # an petaei error sthn eksetash einai epeidh diaforetika environments kanoun parse to path diaforetika
-            region_name = region_names[file_number]  # file_number -> index -> array index -> name
+            file_number = int(file.split('\\')[-1].split('output')[1].split('.csv')[0]) -1 
+            region_name = region_names[file_number]  
             earthquake_counts[region_name] = decades
 
     for region, counts in earthquake_counts.items():
         plt.figure()
-        plt.bar(counts.keys(), counts.values())
-        plt.title(f'Number of earthquakes per decade in {region}')
-        plt.xlabel('Decade')
-        plt.ylabel('Number of earthquakes')
-        plt.show()        
+        bars = plt.bar(counts.keys(), counts.values(), color='#003153', width=8)  # xontres mpares = wraies mpares
+        # epishs prussian blue, #003153 aneta best color
+        # dodgerblue poly dynatos contender https://matplotlib.org/stable/gallery/color/named_colors.html
+        plt.title(f'Number of earthquakes per decade in {region}', pad=20)
+        plt.xlabel('Decade', labelpad=15)
+        plt.ylabel('Number of earthquakes', labelpad=15)
+        plt.grid(True)
 
+        # fainetai kalytero me ton arithmo epanw stis mpares
+        for bar in bars:
+            yval = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2, yval + 0.05, yval, ha='center', va='bottom')
+
+        plt.show()
 
 def main():
     # ftiaxnoume ta csv files
-    serializePerifereies(loadPerifereies())
-    findSeismoiPoints()
+    #serializePerifereies(loadPerifereies())
+    #findSeismoiPoints()
     visualizeData()
     
     
