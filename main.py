@@ -107,9 +107,14 @@ def openSeismoiFile():
         return seismoi
     
 def findSeismoiPoints():
-    # Create a list of MultiPolygon objects from the regional files
+    # kathe region file ftiaxnei kai ena multipolygon object
+    # 100% mporw na to kanw poly pio memory efficient
+    # alla ta data einai ligotera apo ton xrono pou menei opote den leei
     multipolygons = [readPolygonsFromFile(i) for i in range(1, 14)]
     
+    # trexw kai checkarw gia kathe multipolygon (perifereia) poioi apo tous seismous eginan mesa tous. thewritika afou oi perioxes den exoun overlap
+    # tha mporousame na tsekaroume o kathe seismso se poia apo tis 2 anhkei (an anoikei)
+    # den xreiazetai, plus auto einai pio aplo sthn kataskevh twn strings
     seismoi = openSeismoiFile()
     print("Latitude, Longitude, Magnitude, Month, Year, Perifereia")
     counter = 1
@@ -128,7 +133,7 @@ def findSeismoiPoints():
                     
 def visualizeData():
     earthquake_counts = {}
-    region_names = ['Thessaly', 'Attica']  # Add more region names as needed
+    region_names = ['Thessaly', 'Attica']
 
     for file in glob.glob(f"{OUTPUT_PATH}output*.csv"):
         with open(file, 'r') as f:
@@ -136,7 +141,7 @@ def visualizeData():
             decades = {}
             for row in reader:
                 year = int(row['year'])
-                decade = round(year / 10) * 10  # Round to the nearest decade
+                decade = round(year / 10) * 10 
                 if decade not in decades:
                     decades[decade] = 0
                 decades[decade] += 1
