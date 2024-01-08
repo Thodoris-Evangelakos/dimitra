@@ -1,4 +1,4 @@
-import csv, calendar, ast, glob
+import csv, calendar, ast, glob, os, platform
 import shapely.geometry as sg
 from shapely.geometry import Polygon, MultiPolygon
 import matplotlib.pyplot as plt
@@ -19,12 +19,10 @@ csv.field_size_limit(2**31-1)
 
 
 # lambda func gia na kanoume to asxhmo timestamp wraio mhna
-get_month = lambda timestamp: calendar.month_name[int(timestamp[:2])]
 
-'''
 def get_month(timestamp):
     return calendar.month_name[int(timestamp[:2])]
-'''
+
 
 
 # operations gia na kanw dedomena twn csv objects
@@ -151,7 +149,11 @@ def visualizeData():
                 if decade not in decades:
                     decades[decade] = 0
                 decades[decade] += 1
-            file_number = int(file.split('/')[-1].split('output')[1].split('.csv')[0]) -1 
+            op_sys = platform.system()
+            if op_sys == 'Windows':
+                file_number = int(file.split('\\')[-1].split('output')[1].split('.csv')[0]) -1
+            else:
+                file_number = int(file.split('/')[-1].split('output')[1].split('.csv')[0]) -1 
             region_name = region_names[file_number]  
             earthquake_counts[region_name] = decades
 
