@@ -3,8 +3,6 @@ testthemain.py
 test_seismoi.dat
 test_perifereies.csv
 data
-output
-data/regions
 .gitignore
 Fruit.py
 tmp.py
