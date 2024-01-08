@@ -74,6 +74,30 @@ def readPolygonsFromFile(index):
     multipolygon = MultiPolygon(polygons)
     return multipolygon
 
+"""
+def findSeismoiPoints():
+    # Create a list of MultiPolygon objects from the regional files
+    multipolygons = [readPolygonsFromFile(i) for i in range(1, 14)]
+    
+    seismoi = openSeismoiFile()
+    print("Latitude, Longitude, Magnitude, Month, Year, Perifereia")
+    counter = 1
+    for index, multipolygon in enumerate(multipolygons):
+        string = "Latitude,Longitude,month,year,Magnitude\n"
+        if index in desired_indices:
+            for seismos in seismoi:
+                if sg.Point(seismos.lon, seismos.lat).intersects(multipolygon):
+                    _tmp = [str(item).rstrip() for item in seismos.prnt()]
+                    if int(_tmp[4]) >= 1960 and int(_tmp[4]) <= 2010:
+                        print(f"{_tmp[0]}, {_tmp[1]}, {_tmp[2]}, {get_month(_tmp[3])}, {_tmp[4]}, {regions[index]}")
+                        string += f"{_tmp[0]}, {_tmp[1]}, {get_month(_tmp[3])}, {_tmp[4]}, {_tmp[2]}\n"
+            with open(f"{output_path}output{counter}.csv", 'w') as f:
+                f.write(string)
+                counter += 1
+"""
+
+# to palio openSeismoiFile, apla unreadable
+# to kainourgio einai eksisou unreadable alla toulaxiston einai 5 seires
 
 def openSeismoiFile():
     with open(SEISMOI_PATH, 'r') as f:
