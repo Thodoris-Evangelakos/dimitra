@@ -17,7 +17,7 @@ class Perifereia():
         return(f"FID: {self.FID}, PER: {self.per}, Polygons: {self.polygons}")
     
     def file(self, index):
-        path = "data/regions/"
+        path = "regions/"
         filename = f"{path}region{index+1}.csv"
         with open(filename, 'w+') as f:
             for polygon in self.polygons:

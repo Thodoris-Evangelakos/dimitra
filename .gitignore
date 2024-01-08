@@ -6,3 +6,5 @@ data
 output
 data/regions
 .gitignore
+Fruit.py
+tmp.py
