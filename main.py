@@ -170,8 +170,12 @@ def visualizeData():
 
 def main():
     # ftiaxnoume ta csv files
-    #serializePerifereies(loadPerifereies())
-    #findSeismoiPoints()
+    serializePerifereies(loadPerifereies())
+
+    # ta panta apo reading to seismoi.dat mexri na ftiaxnoume ta output files
+    findSeismoiPoints()
+    
+    # visualize data, to wraio xalaro kommati. paizoume me xrwmatakia
     visualizeData()
     
     
